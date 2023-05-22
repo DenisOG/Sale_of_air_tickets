@@ -1,6 +1,7 @@
 package Repository.DataSource;
 
 import Model.*;
+import sun.security.mscapi.CPublicKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +23,58 @@ public class DataSourceImpl implements DataSource{
         initData();
     }
 
+    public interface AddValue{
+        void add();
+    }
+
+    public class AirLines implements AddValue{
+        @Override
+        public void add(){
+            airlines.add(new Airline(1, "Qatar Airways"));
+            airlines.add(new Airline(2, "Singapore Airlines"));
+            airlines.add(new Airline(3, "Emirates"));
+        }
+    }
+
+    public class Airplanes implements AddValue{
+        @Override
+        public void add(){
+            airplanes.add(new Airplane(1, "Airbus A319"));
+            airplanes.add(new Airplane(2, "Airbus A320"));
+            airplanes.add(new Airplane(3, "Airbus A321"));
+        }
+    }
+
+    public abstract class ValueGenerator{
+        public void addValue(){
+            AddValue addValue = createValue();
+            addValue.add();
+        }
+        public abstract AddValue createValue();
+    }
+
+    public class AirLinesGenerator extends ValueGenerator{
+        @Override
+        public AddValue createValue(){
+            return new AirLines();
+        }
+    }
+
+    public class AirplanesGenerator extends ValueGenerator{
+        @Override
+        public AddValue createValue(){
+            return new Airplanes();
+        }
+    }
+
     private void initData(){
-        //авиалинии
-        airlines.add(new Airline(1, "Qatar Airways"));
-        airlines.add(new Airline(2, "Singapore Airlines"));
-        airlines.add(new Airline(3, "Emirates"));
-        //самолёты
-        airplanes.add(new Airplane(1, "Airbus A319"));
-        airplanes.add(new Airplane(2, "Airbus A320"));
-        airplanes.add(new Airplane(3, "Airbus A321"));
+
+        List<ValueGenerator> generatorList = new ArrayList<>();
+        generatorList.add(new AirLinesGenerator());
+        generatorList.add(new AirplanesGenerator());
+        ValueGenerator valueGenerator = generatorList.get(0);
+        valueGenerator.addValue();
+
         //льготы
         benefits.add(new Benefit(1, "Молодёжь до 23", 10));
         benefits.add(new Benefit(2, "Многодетная семья", 20));

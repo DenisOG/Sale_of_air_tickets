@@ -52,6 +52,12 @@ public class UIAdapter {
                         "Дата прилёта: "+dateFinish
                 ));
 
+                //IMessage messageDecorator = new MessageDecorator();
+                Message simpleMessage = new SimpleMessage();
+                Message okDecorator = new OkDecorator(simpleMessage);
+                System.out.println(String.valueOf(okDecorator.getMessage()));
+
+
                 System.out.println("Введите номер меню");
                 menuNum = console.nextInt();
 
@@ -70,10 +76,42 @@ public class UIAdapter {
     }
 
     public static void printMenu(){
-        System.out.println("Меню:\n"+
+         System.out.println("Меню:\n"+
                 "1. Купить билет\n"+
                 "2. Вывести общую сумму заказов\n"+
                 "3. Вывести количество билетов в заказах\n"+
                 "0. Выход");
+    }
+
+    public interface Message{
+        public String getMessage();
+    }
+
+    public class SimpleMessage implements Message{
+        private String message = "Сообщение";
+        public String getMessage(){
+            return this.message;
+        }
+    }
+
+    public class OkDecorator implements Message{
+        private Message message;
+        public OkDecorator(Message message){
+            this.message = message;
+        }
+        public String getMessage(){
+             return this.message.getMessage() + "\033[32m Успешно \033[0m";
+        }
+    }
+
+    public class ErrorDecorator implements Message{
+        private Message message;
+        public ErrorDecorator(Message message){
+            this.message = message;
+        }
+
+        public String getMessage(){
+            return this.message.getMessage() + "\033[3;31m Внимание! \033[0m";
+        }
     }
 }
